@@ -1,280 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <style>
-        html,body{
-            height: 100%;
-        }
-        .letter {
-            width: 5rem;
-            height: 5rem;
-            margin: 1px;
-            background-color: #d3d3d3;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 3rem;
-            font-weight: bold;
-        }
-        .filled-letter {
-            background-color: lightblue;
-        }
-        .active-letter {
-            background-color: #89898f;
-            animation-name: ala;
-            animation-duration: 1s;
-            animation-iteration-count: infinite;
-        }
-        .true-letter {
-            background-color: #5bca5b;
-        }
-        .false-letter {
-            background-color: #fe655a;
-        }
-        .true-other-letter {
-            background-color: gold;
-        }
-        @keyframes ala {
-           from {background-color: #89898f;}
-            to {background-color: #727272;}
-        }
-        body.success {
-            background: linear-gradient(-45deg, #bfffda, #e2e2e2, #aec0a9, #d0f3de);
-            background-size: 400% 400%;
-            animation: gradient 0.5s ease infinite;
-            height: 100vh;
-        }
-        body.success #letter-container {
-            transition: transform .5s;
-            transform: scale(2) rotate3d(1, 1, 1, 360deg);
-        }
-        @keyframes gradient {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
-        }
-
-    </style>
+    <title>Rewordle</title>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="logo.css">
+    <link rel="stylesheet" href="style.css">
     <script src="words.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
-    <script> 
-        function copyTrueLetter(activeRow)
-        {
-            $(".true-letter").each(function(){
-                activeRow.find(".letter").eq($(this).index()).text($(this).text()).addClass("true-letter");
-            });
-        }
-        function cursorMove(direction,nextRow)
-        {
-            var activeIndex = $(".active-letter").index();
-            var activeRow = $(".active-letter").parents("[data-row]").first();
-            if ((!nextRow && activeIndex < 4) || (nextRow || direction == -1)) {
-                activeRow.find(".letter").eq(activeIndex).removeClass("active-letter");
-            }
-            var newLetter = activeRow.find(".letter").eq(activeIndex+direction);
-            if (newLetter.length > 0) {
-                newLetter.addClass("active-letter");
-                if (newLetter.hasClass('true-letter')) {
-                    cursorMove(direction,nextRow);   
-                }
-            } else if(nextRow) {
-                $("[data-row]").eq(activeRow.index()+direction).find(".letter").first().addClass("active-letter");
-                copyTrueLetter($("[data-row]").eq(activeRow.index()+direction));
-                if ($(".active-letter").hasClass("true-letter")) {
-                    cursorMove(direction,nextRow);
-                }
-            } else {
-                /*activeRow.find(".letter").eq(activeIndex).removeClass("active-letter");
-                activeRow.find(".letter").first().addClass("active-letter");*/
-            }
-        }
-        function getRowText()
-        {
-            var activeRow = $(".active-letter").parents("[data-row]").first();
-            var writtenText = "";
-            activeRow.each(function(){
-                $(this).find(".letter").each(function(){
-                    if ( $(this).text() != "") {
-                        writtenText+=$(this).text();
-                    }
-                });
-            });
-            return writtenText;
-        }
-        function checkWord(selectedWord)
-        {
-            var activeIndex = $(".active-letter").index();
-            var activeRow = $(".active-letter").parents("[data-row]").first();
-            var writtenText = getRowText();
-            if (words.indexOf(writtenText.toLocaleLowerCase()) > -1) {
-                activeRow.each(function(){
-                    
-                    $(this).find(".letter").each(function(){
-                        if ( $(this).text() != "") {
-                            if ($(this).text() == selectedWord[$(this).index()]) {
-                                $(this).addClass("true-letter");
-                            } else if(selectedWord.indexOf($(this).text()) >= 0) {
-                                $(this).addClass("true-other-letter");
-                            } else {
-                                $(this).addClass("false-letter");
-                            }
-                        }
-                    });
-                    if(writtenText == selectedWord) {
-                        $(".active-letter").removeClass("active-letter");
-                        $("body").addClass("success");
-                        
-                    } else {
-                        cursorMove(1,true);
-                    }
-                    
-                });
-            } else {
-                activeRow.find(".letter:not(.true-letter)").text('');
-                activeRow.find(".letter:not(.true-letter)").removeClass('active-letter filled-letter');
-                activeRow.find(".letter:not(.true-letter)").first().addClass('active-letter');
-            }
-        }
-        $(function(){
-            var gameType = localStorage.getItem('gametype') || 'word';
-            $(".game-type:checked").prop('checked', false);
-            $(".game-type[value="+gameType+"]").prop('checked', true);
-            if (gameType != "word") {
-                words = [];
-                for (var i = 10000; i <= 99999; i++) {
-                    words.push(i.toString());
-                }
-            } else {
-                $("#total").hide();
-            }
-            
-            var selectedIndex = Math.floor(Math.random() * words.length);
-            var selectedWord =  words[selectedIndex].toLocaleUpperCase();
-            var setting = {
-                helpCount:1
-            };
-            console.log(selectedWord);
-
-            $(".game-type").change(function(){
-                localStorage.setItem('gametype',$(this).val());
-                window.location.reload();
-            });
-            $("#total").text(selectedWord.split('').reduce(function(a,b){ return parseInt(a)+parseInt(b); }, 0));
-            
-            $(document).keyup(function(e){
-                if (!e.ctrlKey) {
-                    if ((gameType == "word" && /(^[a-zA-ZğüşöçİiıĞÜŞÖÇ]{1})$(.*)/.test(e.key)) || (gameType == "number" && /(^[0-9]{1})$(.*)/.test(e.key))) {
-                        $(".active-letter").text(e.key.toLocaleUpperCase()).addClass('filled-letter');
-                        cursorMove(1,false);
-                    } else if(e.keyCode == 8) {
-                        $(".active-letter").text('');
-                        cursorMove(-1,false);
-                    } else if(e.keyCode == 13 && getRowText().length == 5) {
-                        checkWord(selectedWord);
-                    } else if(e.keyCode == 37) {
-                        cursorMove(-1,false);
-                    } else if(e.keyCode == 39) {
-                        cursorMove(1,false);
-                    } 
-                } 
-            });
-            $(".help-me").click(function(){
-                if (setting.helpCount > 0) {
-                    var selectedIndex = Math.floor(Math.random() * 5);
-                    var helpedLetter = $(".active-letter").parents("[data-row]").first().find(".letter").eq(selectedIndex);
-                    helpedLetter.text(selectedWord[selectedIndex]).addClass('true-letter');
-                    setting.helpCount = 0;
-                }
-            });
-        });
-    </script>
+    <script src="jquery-3.6.0.min.js"></script>
+    <script src="script.js"></script>
 </head>
+
 <body class="d-flex align-items-center flex-column">
-      <style>
-        /* Main styles */
-@import url(https://fonts.googleapis.com/css?family=Open+Sans:800);
-.text {
-  fill: none;
-  stroke-width: 3;
-  stroke-linejoin: round;
-  stroke-dasharray: 70 330;
-  stroke-dashoffset: 0;
-  -webkit-animation: stroke 6s infinite linear;
-  animation: stroke 6s infinite linear;
-}
-.text:nth-child(5n+1) {
-  stroke: #F2385A;
-  -webkit-animation-delay: -1.2s;
-  animation-delay: -1.2s;
-}
-.text:nth-child(5n+2) {
-  stroke: #F5A503;
-  -webkit-animation-delay: -2.4s;
-  animation-delay: -2.4s;
-}
-.text:nth-child(5n+3) {
-  stroke: #E9F1DF;
-  -webkit-animation-delay: -3.6s;
-  animation-delay: -3.6s;
-}
-.text:nth-child(5n+4) {
-  stroke: #56D9CD;
-  -webkit-animation-delay: -4.8s;
-  animation-delay: -4.8s;
-}
-.text:nth-child(5n+5) {
-  stroke: #3AA1BF;
-  -webkit-animation-delay: -6s;
-  animation-delay: -6s;
-}
-
-@-webkit-keyframes stroke {
-  100% {
-    stroke-dashoffset: -400;
-  }
-}
-@keyframes stroke {
-  100% {
-    stroke-dashoffset: -400;
-  }
-}
-
-
-body {
-  
-  font: 35px Open Sans, Impact;
-  text-transform: uppercase;
-  
-}
-
-
-        </style>
-        
-<svg viewBox="0 0 600 100">
-    <!-- Symbol-->
-    <symbol id="s-text">
-      <text text-anchor="middle" x="50%" y="50%" dy=".35em">REWORDLE</text>
-    </symbol>
-    <!-- Duplicate symbols-->
-    <use class="text" xlink:href="#s-text"></use>
-    <use class="text" xlink:href="#s-text"></use>
-    <use class="text" xlink:href="#s-text"></use>
-    <use class="text" xlink:href="#s-text"></use>
-    <use class="text" xlink:href="#s-text"></use>
-  </svg>
+    <svg viewBox="0 0 600 100">
+        <symbol id="s-text">
+            <text text-anchor="middle" x="50%" y="50%" dy=".35em">REWORDLE</text>
+        </symbol>
+        <use class="text" xlink:href="#s-text"></use>
+        <use class="text" xlink:href="#s-text"></use>
+        <use class="text" xlink:href="#s-text"></use>
+        <use class="text" xlink:href="#s-text"></use>
+        <use class="text" xlink:href="#s-text"></use>
+    </svg>
     <div class="container">
-      
+
         <div class="row justify-content-center">
             <div class="col-lg-6 text-center">
                 <div id="letter-container" class="d-inline-block">
@@ -317,10 +69,12 @@ body {
             </div>
             <div class="col-lg-2">
                 <div class="w-100">
-                    <input type="radio" class="btn-check game-type" name="game-type" value="word" id="success-outlined" autocomplete="off" checked>
+                    <input type="radio" class="btn-check game-type" name="game-type" value="word" id="success-outlined"
+                        autocomplete="off" checked>
                     <label class="btn btn-outline-secondary" for="success-outlined">WORD</label>
-    
-                    <input type="radio" class="btn-check game-type" name="game-type" value="number" id="danger-outlined" autocomplete="off">
+
+                    <input type="radio" class="btn-check game-type" name="game-type" value="number" id="danger-outlined"
+                        autocomplete="off">
                     <label class="btn btn-outline-secondary" for="danger-outlined">NUMBER</label>
                 </div>
                 <a href="javascript:;" class="help-me btn btn-outline-primary mt-2 w-100">HELP ME</a>
@@ -329,4 +83,5 @@ body {
         </div>
     </div>
 </body>
+
 </html>

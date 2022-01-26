@@ -1,0 +1,62 @@
+html,
+body {
+  height: 100%;
+}
+.letter {
+  width: 5rem;
+  height: 5rem;
+  margin: 1px;
+  background-color: #d3d3d3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 3rem;
+  font-weight: bold;
+}
+.filled-letter {
+  background-color: lightblue;
+}
+.active-letter {
+  background-color: #89898f;
+  animation-name: ala;
+  animation-duration: 1s;
+  animation-iteration-count: infinite;
+}
+.true-letter {
+  background-color: #5bca5b;
+}
+.false-letter {
+  background-color: #fe655a;
+}
+.true-other-letter {
+  background-color: gold;
+}
+@keyframes ala {
+  from {
+    background-color: #89898f;
+  }
+  to {
+    background-color: #727272;
+  }
+}
+body.success {
+  background: linear-gradient(-45deg, #bfffda, #e2e2e2, #aec0a9, #d0f3de);
+  background-size: 400% 400%;
+  animation: gradient 0.5s ease infinite;
+  height: 100vh;
+}
+body.success #letter-container {
+  transition: transform 0.5s;
+  transform: scale(2) rotate3d(1, 1, 1, 360deg);
+}
+@keyframes gradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
