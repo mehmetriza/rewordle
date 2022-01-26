@@ -94,7 +94,10 @@ $(function(){
         helpCount:1
     };
     console.log(selectedWord);
-
+    setTimeout(() => {
+        $(".text").addClass("paused");    
+    }, 6500);
+    
     $(".game-type").change(function(){
         localStorage.setItem('gametype',$(this).val());
         window.location.reload();

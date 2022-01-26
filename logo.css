@@ -9,6 +9,9 @@
   -webkit-animation: stroke 6s infinite linear;
   animation: stroke 6s infinite linear;
 }
+.text.paused {
+  animation-play-state: paused;
+}
 .text:nth-child(5n + 1) {
   stroke: #f2385a;
   -webkit-animation-delay: -1.2s;
