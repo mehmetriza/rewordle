@@ -76,57 +76,63 @@ function checkWord(selectedWord)
     }
 }
 $(function(){
-    var gameType = localStorage.getItem('gametype') || 'word';
-    $(".game-type:checked").prop('checked', false);
-    $(".game-type[value="+gameType+"]").prop('checked', true);
-    if (gameType != "word") {
-        words = [];
-        for (var i = 10000; i <= 99999; i++) {
-            words.push(i.toString());
+    var script = document.createElement('script');
+    var language = ["en","tr"].indexOf(navigator.language) >= 0 ? navigator.language : "en";
+    script.src = "words-"+language+".js";
+    document.head.appendChild(script);
+    script.onload = function () {
+        var gameType = localStorage.getItem('gametype') || 'word';
+        $(".game-type:checked").prop('checked', false);
+        $(".game-type[value="+gameType+"]").prop('checked', true);
+        if (gameType != "word") {
+            words = [];
+            for (var i = 10000; i <= 99999; i++) {
+                words.push(i.toString());
+            }
+        } else {
+            $("#total").hide();
         }
-    } else {
-        $("#total").hide();
-    }
-    
-    var selectedIndex = Math.floor(Math.random() * words.length);
-    var selectedWord =  words[selectedIndex].toLocaleUpperCase();
-    var setting = {
-        helpCount:1
-    };
-    console.log(selectedWord);
-    setTimeout(() => {
-        $(".text").addClass("paused");    
-    }, 6500);
-    
-    $(".game-type").change(function(){
-        localStorage.setItem('gametype',$(this).val());
-        window.location.reload();
-    });
-    $("#total").text(selectedWord.split('').reduce(function(a,b){ return parseInt(a)+parseInt(b); }, 0));
-    
-    $(document).keyup(function(e){
-        if (!e.ctrlKey) {
-            if ((gameType == "word" && /(^[a-zA-ZğüşöçİiıĞÜŞÖÇ]{1})$(.*)/.test(e.key)) || (gameType == "number" && /(^[0-9]{1})$(.*)/.test(e.key))) {
-                $(".active-letter").text(e.key.toLocaleUpperCase()).addClass('filled-letter');
-                cursorMove(1,false);
-            } else if(e.keyCode == 8) {
-                $(".active-letter").text('');
-                cursorMove(-1,false);
-            } else if(e.keyCode == 13 && getRowText().length == 5) {
-                checkWord(selectedWord);
-            } else if(e.keyCode == 37) {
-                cursorMove(-1,false);
-            } else if(e.keyCode == 39) {
-                cursorMove(1,false);
+        
+        var selectedIndex = Math.floor(Math.random() * words.length);
+        var selectedWord =  words[selectedIndex].toLocaleUpperCase();
+        var setting = {
+            helpCount:1
+        };
+        console.log(selectedWord);
+        setTimeout(() => {
+            $(".text").addClass("paused");    
+        }, 6500);
+        
+        $(".game-type").change(function(){
+            localStorage.setItem('gametype',$(this).val());
+            window.location.reload();
+        });
+        $("#total").text(selectedWord.split('').reduce(function(a,b){ return parseInt(a)+parseInt(b); }, 0));
+        
+        $(document).keyup(function(e){
+            if (!e.ctrlKey) {
+                if ((gameType == "word" && /(^[a-zA-ZğüşöçİiıĞÜŞÖÇ]{1})$(.*)/.test(e.key)) || (gameType == "number" && /(^[0-9]{1})$(.*)/.test(e.key))) {
+                    $(".active-letter").text(e.key.toLocaleUpperCase()).addClass('filled-letter');
+                    cursorMove(1,false);
+                } else if(e.keyCode == 8) {
+                    $(".active-letter").text('');
+                    cursorMove(-1,false);
+                } else if(e.keyCode == 13 && getRowText().length == 5) {
+                    checkWord(selectedWord);
+                } else if(e.keyCode == 37) {
+                    cursorMove(-1,false);
+                } else if(e.keyCode == 39) {
+                    cursorMove(1,false);
+                } 
             } 
-        } 
-    });
-    $(".help-me").click(function(){
-        if (setting.helpCount > 0) {
-            var selectedIndex = Math.floor(Math.random() * 5);
-            var helpedLetter = $(".active-letter").parents("[data-row]").first().find(".letter").eq(selectedIndex);
-            helpedLetter.text(selectedWord[selectedIndex]).addClass('true-letter');
-            setting.helpCount = 0;
-        }
-    });
+        });
+        $(".help-me").click(function(){
+            if (setting.helpCount > 0) {
+                var selectedIndex = Math.floor(Math.random() * 5);
+                var helpedLetter = $(".active-letter").parents("[data-row]").first().find(".letter").eq(selectedIndex);
+                helpedLetter.text(selectedWord[selectedIndex]).addClass('true-letter');
+                setting.helpCount = 0;
+            }
+        });
+    }
 });
