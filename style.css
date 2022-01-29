@@ -60,3 +60,19 @@ body.success #letter-container {
     background-position: 0% 50%;
   }
 }
+#alphabet {
+  display: none !important;
+}
+@media only screen and (max-width: 600px) {
+  #alphabet {
+    display: flex !important;
+  }
+  .letter {
+    width: 3.2rem;
+    height: 3.2rem;
+
+  }
+  .alphabet-box {
+    font-size: 13px;
+  }
+}
