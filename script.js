@@ -8,10 +8,16 @@ function cursorMove(direction,nextRow)
 {
     var activeIndex = $(".active-letter").index();
     var activeRow = $(".active-letter").parents("[data-row]").first();
+    
+     
     if ((!nextRow && activeIndex < 4) || (nextRow || direction == -1)) {
         activeRow.find(".letter").eq(activeIndex).removeClass("active-letter");
     }
+    if ((activeRow.find(".letter").eq(activeIndex+direction).hasClass("true-letter") && activeRow.find(".letter").eq(activeIndex+direction).is(':last-child'))) {
+        activeIndex = 0;
+    }
     var newLetter = activeRow.find(".letter").eq(activeIndex+direction);
+    
     if (newLetter.length > 0) {
         newLetter.addClass("active-letter");
         if (newLetter.hasClass('true-letter')) {
@@ -75,7 +81,7 @@ function checkWord(selectedWord)
         activeRow.find(".letter:not(.true-letter)").first().addClass('active-letter');
     }
 }
-function heh(e,selectedWord,gameType)
+function keyboardTrigger(e,selectedWord,gameType)
 {
     if (!e.ctrlKey) {
         if ((gameType == "word" && /(^[a-zA-ZğüşöçİiıĞÜŞÖÇ]{1})$(.*)/.test(e.key)) || (gameType == "number" && /(^[0-9]{1})$(.*)/.test(e.key))) {
@@ -127,7 +133,7 @@ $(function(){
             $("#alphabet").append('<div class="alphabet-box flex-fill rounded m-1 py-2 px-3 alert-success">ENTER</div>');
 
             var selectedIndex = Math.floor(Math.random() * words.length);
-            var selectedWord =  words[selectedIndex].toLocaleUpperCase();
+            var selectedWord = words[selectedIndex].toLocaleUpperCase();
             var setting = {
                 helpCount:1
             };
@@ -142,7 +148,7 @@ $(function(){
             $("#total").text(selectedWord.split('').reduce(function(a,b){ return parseInt(a)+parseInt(b); }, 0));
             
             $(document).on("keyup",function(e){
-                heh(e,selectedWord,gameType);
+                keyboardTrigger(e,selectedWord,gameType);
             });
             $(".alphabet-box").click(function(){
                 var e = {};
@@ -158,7 +164,7 @@ $(function(){
                 } else {
                     e['keyCode'] = $(this).text().toLocaleUpperCase().charCodeAt(0);
                 }
-                heh(e,selectedWord,gameType);
+                keyboardTrigger(e,selectedWord,gameType);
 
             });
             $(".help-me").click(function(){
@@ -166,6 +172,9 @@ $(function(){
                     var selectedIndex = Math.floor(Math.random() * 5);
                     var helpedLetter = $(".active-letter").parents("[data-row]").first().find(".letter").eq(selectedIndex);
                     helpedLetter.text(selectedWord[selectedIndex]).addClass('true-letter');
+                    if ($(".active-letter.true-letter").length > 0) {
+                        cursorMove(1,false);
+                    }
                     setting.helpCount = 0;
                 }
             });
