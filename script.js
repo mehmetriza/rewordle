@@ -6,6 +6,7 @@ function copyTrueLetter(activeRow)
 }
 function cursorMove(direction,nextRow)
 {
+    console.log("---",direction,nextRow);
     var activeIndex = $(".active-letter").index();
     var activeRow = $(".active-letter").parents("[data-row]").first();
     
@@ -24,6 +25,7 @@ function cursorMove(direction,nextRow)
             cursorMove(direction,nextRow);   
         }
     } else if(nextRow) {
+        console.log("next-row");
         $("[data-row]").eq(activeRow.index()+direction).find(".letter").first().addClass("active-letter");
         copyTrueLetter($("[data-row]").eq(activeRow.index()+direction));
         if ($(".active-letter").hasClass("true-letter")) {
@@ -66,12 +68,30 @@ function checkWord(selectedWord)
                     }
                 }
             });
+            $(this).find(".letter.true-other-letter").each(function(){
+                var filledText = $(this).text();
+                var filledIndex = $(this).index();
+                var status = 1;
+                
+
+                activeRow.find(".letter.false-letter,.letter.true-other-letter:not(:eq("+filledIndex+"))").each(function(){
+                    console.log($(this).index());
+                    if (selectedWord[$(this).index()] == filledText) {
+                        status = 0;
+                    }
+                });
+                    if (status != 0) {
+                        activeRow.find(".letter").eq(filledIndex).removeClass("true-other-letter").addClass("false-letter")
+                    }
+                
+            });
+            selectedWord.indexOf($(this).text())
             if(writtenText == selectedWord) {
                 $(".active-letter").removeClass("active-letter");
                 $("body").addClass("success");
                 
             } else {
-                cursorMove(1,true);
+                cursorMove(1,2);
             }
             
         });
