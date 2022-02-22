@@ -120,7 +120,7 @@ function keyboardTrigger(e,selectedWord,gameType)
     }
 }
 $(function(){
-    var language = ["en","tr"].indexOf(navigator.language) >= 0 ? navigator.language : "en";
+    var language = ["en","tr"].indexOf(navigator.language || navigator.userLanguage) >= 0 ? navigator.language || navigator.userLanguage : "en";
 
     var alphabetScript = document.createElement('script');
     alphabetScript.src = "alphabet-"+language+".js";
